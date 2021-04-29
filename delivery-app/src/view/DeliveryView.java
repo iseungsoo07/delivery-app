@@ -7,7 +7,6 @@ import controller.CustomerDAO;
 public class DeliveryView {
 	Scanner sc = new Scanner(System.in);
 	int act;
-	boolean isMember;
 	CustomerDAO cd = new CustomerDAO();
 
 	public DeliveryView() {
@@ -28,7 +27,6 @@ public class DeliveryView {
 				int cpw = sc.nextInt();
 				if(cd.signIn(cid, cpw)) {
 					System.out.println("로그인 성공!");
-					isMember = true;
 					break;
 				} else {
 					System.out.println("로그인 실패! 아이디 비밀번호를 다시 확인하세요.");
@@ -65,7 +63,7 @@ public class DeliveryView {
 			}
 		}
 		
-		if(isMember) {
+		if(act == 1) {
 			new MemberView();
 		}
 	}

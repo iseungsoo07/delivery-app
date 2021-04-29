@@ -5,13 +5,15 @@ public class Store {
 	private String sname;
 	private String saddr;
 	private int sphone;
+	private String food_type;
 
-	public Store(int snum, String sname, String saddr, int sphone) {
+	public Store(int snum, String sname, String saddr, int sphone, String menu_type) {
 		super();
 		this.snum = snum;
 		this.sname = sname;
 		this.saddr = saddr;
 		this.sphone = sphone;
+		this.food_type = menu_type;
 	}
 
 	public int getSnum() {
@@ -44,6 +46,14 @@ public class Store {
 
 	public void setSphone(int sphone) {
 		this.sphone = sphone;
+	}
+
+	public String getFood_type() {
+		return food_type;
+	}
+
+	public void setFood_type(String menu_type) {
+		this.food_type = menu_type;
 	}
 
 }
