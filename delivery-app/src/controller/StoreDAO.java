@@ -21,6 +21,7 @@ public class StoreDAO {
 	HashSet<String> food_type = new HashSet<String>();
 
 	String[] ft = null;
+	String[] sa = null;
 
 	public ArrayList<Store> selectAll() {
 		try {
@@ -89,11 +90,6 @@ public class StoreDAO {
 				ft[num++] = iter.next();
 			}
 
-			for (int i = 0; i < ft.length; i++) {
-				System.out.print(i + 1 + ". " + ft[i] + "   ");
-			}
-			System.out.println();
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -106,9 +102,19 @@ public class StoreDAO {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void showFoodType() {
+		for (int i = 0; i < ft.length; i++) {
+			System.out.print(i + 1 + ". " + ft[i] + "   ");
+		}
+		System.out.println();
 	}
 
 	public void getStoreInfo(int type) {
+		
+		int i = 0;
+		
 		try {
 			Class.forName(dName);
 
@@ -119,12 +125,19 @@ public class StoreDAO {
 			conn = DriverManager.getConnection(url, user, password);
 			stmt = conn.createStatement();
 
-			String sql = "SELECT snum, sname FROM store WHERE food_type = '" + ft[type - 1] + "'";
+			String sql = "SELECT count(*) FROM store WHERE food_type = '" + ft[type - 1] + "'";
 			rs = stmt.executeQuery(sql);
+			rs.next();
 
-			System.out.println("===가게 목록===");
-			while (rs.next()) {
-				System.out.println(rs.getInt("snum") + ". " + rs.getString("sname"));
+			int store_cnt = rs.getInt(1);
+			sa = new String[store_cnt];
+
+			sql = "SELECT sname FROM store WHERE food_type = '" + ft[type - 1] + "'";
+
+			rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				sa[i++] = rs.getString("sname");
 			}
 
 		} catch (ClassNotFoundException e) {
@@ -140,38 +153,22 @@ public class StoreDAO {
 			}
 		}
 	}
-
-	public void selectStore(int num) {
-		try {
-			Class.forName(dName);
-
-			String url = "jdbc:mysql://localhost:3307/delivery-service";
-			String user = "root";
-			String password = "1234";
-
-			conn = DriverManager.getConnection(url, user, password);
-			stmt = conn.createStatement();
-
-			String sql = "SELECT mnum, menu, mprice FROM menu WHERE snum = " + num;
-			rs = stmt.executeQuery(sql);
-
-			System.out.println("===메뉴 목록===");
-			while (rs.next()) {
-				System.out.println(rs.getInt("mnum") + ". " + rs.getString("menu") + "(" + rs.getInt("mprice") + ")");
-			}
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				stmt.close();
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+	
+	public void showStoreInfo() {
+		System.out.println("===가게 목록===");
+		for (int i = 0; i < sa.length; i++) {
+			System.out.println(i + 1 + ". " + sa[i]);
 		}
 	}
+	
+	public String[] getStoreArray() {
+		return sa;
+	}
+	
+	public int getStoreArrayLength() {
+		return sa.length;
+	}
+
+	
 
 }

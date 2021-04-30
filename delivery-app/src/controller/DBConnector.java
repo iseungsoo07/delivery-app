@@ -26,10 +26,6 @@ public class DBConnector {
 			conn = DriverManager.getConnection(url, user, password);
 			stmt = conn.createStatement();
 
-			String sql = "SELECT * FROM customer";
-
-			rs = stmt.executeQuery(sql);
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {

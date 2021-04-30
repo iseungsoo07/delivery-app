@@ -6,10 +6,13 @@ public class MemberView {
 	Scanner sc = new Scanner(System.in);
 	int act;
 
-	public MemberView() {
+	public MemberView(String cid) {
+		
+		String myID = cid;
 
 		while (true) {
-			System.out.println("1. 주문하기    2. 주문 내역    3. 설정   4. 돌아가기 ");
+			System.out.println("===사용자 메뉴===");
+			System.out.println("1. 주문하기    2. 주문 내역    3. 마이페이지   4. 돌아가기 ");
 			System.out.print("입력 : ");
 			act = sc.nextInt();
 
@@ -22,11 +25,11 @@ public class MemberView {
 		}
 
 		if (act == 1) {
-			new OrderView();
+			new OrderView(myID);
 		} else if(act == 2) {
 			
 		} else if(act == 3) {
-			
+			new MyPageView(myID);
 		} else {
 			new DeliveryView();
 		}

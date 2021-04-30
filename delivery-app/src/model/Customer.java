@@ -5,6 +5,7 @@ public class Customer {
 	private int cpw;
 	private String cname;
 	private int cphone;
+	private int balance;
 
 	public Customer(String cid, int cpw, String cname, int cphone) {
 		super();
@@ -12,6 +13,7 @@ public class Customer {
 		this.cpw = cpw;
 		this.cname = cname;
 		this.cphone = cphone;
+		this.balance = 0;
 	}
 
 	public String getCid() {
@@ -33,7 +35,6 @@ public class Customer {
 	public String getCname() {
 		return cname;
 	}
-	
 
 	public void setCname(String cname) {
 		this.cname = cname;
@@ -47,8 +48,12 @@ public class Customer {
 		this.cphone = cphone;
 	}
 
-	@Override
-	public String toString() {
-		return this.cid + " / " + this.cpw + " / " + this.cname + " / " + this.cphone;
+	public int getBalance() {
+		return balance;
 	}
+
+	public void setBalance(int balance) {
+		this.balance = balance;
+	}
+
 }
