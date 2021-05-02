@@ -27,7 +27,7 @@ public class MemberView {
 		if (act == 1) {
 			new OrderView(myID);
 		} else if(act == 2) {
-			
+			new OrderListView(myID);
 		} else if(act == 3) {
 			new MyPageView(myID);
 		} else {

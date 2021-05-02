@@ -104,7 +104,7 @@ public class CustomerDAO {
 			conn = DriverManager.getConnection(url, user, password);
 			stmt = conn.createStatement();
 
-			String sql = "INSERT INTO customer VALUES ('" + cid + "', " + cpw + ", '" + cname + "', " + cphone + ")";
+			String sql = "INSERT INTO customer (cid, cpw, cname, cphone) VALUES ('" + cid + "', " + cpw + ", '" + cname + "', " + cphone + ")";
 			stmt.executeUpdate(sql);
 			this.customer_list.add(new Customer(cid, cpw, cname, cphone));
 
@@ -138,6 +138,8 @@ public class CustomerDAO {
 
 		return false;
 	}
+	
+
 
 	public int getBalance(String cid) {
 

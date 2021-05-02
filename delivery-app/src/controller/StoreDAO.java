@@ -111,7 +111,7 @@ public class StoreDAO {
 		System.out.println();
 	}
 
-	public void getStoreInfo(int type) {
+	public String[] getStoreInfo(int type) {
 		
 		int i = 0;
 		
@@ -139,6 +139,8 @@ public class StoreDAO {
 			while(rs.next()) {
 				sa[i++] = rs.getString("sname");
 			}
+			
+			return sa;
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -152,6 +154,7 @@ public class StoreDAO {
 				e.printStackTrace();
 			}
 		}
+		return null;
 	}
 	
 	public void showStoreInfo() {

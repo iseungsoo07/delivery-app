@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import view.MemberView;
@@ -18,11 +21,15 @@ public class MenuDAO {
 	ResultSet rs = null;
 
 	String[] ma = null;
+	String[] sa = null;
 
-	int totalPrice = 0;
+	int totalPrice;
+	int mre;
+
+	HashMap<String, Integer> orderList = new HashMap<String, Integer>();
 
 	public void initStoreArray(int num) {
-		sd.getStoreInfo(num);
+		sa = sd.getStoreInfo(num);
 	}
 
 	public void initFoodTypeArray() {
@@ -86,12 +93,10 @@ public class MenuDAO {
 		}
 	}
 
-	public void orderPhase() {
+	public void orderPhase(String cid, int storeNum) {
 		Scanner sc = new Scanner(System.in);
-		int num = 0;
-		int count = 0;
 		String ans = null;
-		int mprice = 0;
+		int num = 0;
 
 		String address = null;
 
@@ -108,6 +113,8 @@ public class MenuDAO {
 			String sql = null;
 
 			while (true) {
+				int mprice = 0;
+				int count = 0;
 				System.out.print("메뉴 선택 : ");
 				num = sc.nextInt();
 				sql = "SELECT mprice FROM menu WHERE menu = '" + ma[num - 1] + "'";
@@ -116,7 +123,13 @@ public class MenuDAO {
 				mprice = rs.getInt(1);
 				System.out.print("수량 : ");
 				count = sc.nextInt();
+				orderList.put(ma[num - 1], count);
 				totalPrice += count * mprice;
+
+				sql = "SELECT mre FROM menu WHERE menu = '" + ma[num - 1] + "'";
+				rs = stmt.executeQuery(sql);
+				rs.next();
+
 				System.out.print("추가 주문하시겠습니까? (y: 예, n: 아니오) : ");
 				ans = sc.next();
 
@@ -160,31 +173,31 @@ public class MenuDAO {
 			stmt = conn.createStatement();
 
 			int balance = 0;
-		
 
 			String sql = "SELECT balance FROM customer WHERE cid = '" + cid + "'";
 			rs = stmt.executeQuery(sql);
 			rs.next();
 
 			balance = rs.getInt(1);
-			
-			if(balance < totalPrice) {
+
+			if (balance < totalPrice) {
 				System.out.println("잔액 부족! 잔액을 확인하고 다시시도해주세요.");
+				new MemberView(cid);
 			} else {
-				balance -= totalPrice;				
+				balance -= totalPrice;
 			}
 
 			sql = "UPDATE customer SET balance = " + balance + " WHERE cid = '" + cid + "'";
 			stmt.executeUpdate(sql);
-			
+
 			sql = "SELECT balance FROM customer WHERE cid = '" + cid + "'";
 			rs = stmt.executeQuery(sql);
 			rs.next();
-			
+
 			System.out.println("결제가 완료되었습니다.");
 			System.out.println("결제 후 " + cid + "님의 잔액은 " + rs.getInt(1) + "원 입니다.");
 			System.out.println();
-			
+
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -198,5 +211,52 @@ public class MenuDAO {
 			}
 		}
 	}
+
+	public void insertOrderList(String cid, int storeNum) {
+		try {
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			Iterator<Entry<String, Integer>> iter = orderList.entrySet().iterator();
+
+			String sql = "SELECT snum FROM store WHERE sname = '" + sa[storeNum - 1] + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int snum = rs.getInt(1);
+
+			while (iter.hasNext()) {
+				Entry<String, Integer> entry = iter.next();
+				sql = "SELECT mnum FROM menu WHERE menu = '" + entry.getKey() + "'";
+				rs = stmt.executeQuery(sql);
+				rs.next();
+
+				int mnum = rs.getInt(1);
+
+				sql = "INSERT INTO orderlist (cid, snum, mnum, mcount) VALUES ('" + cid + "', " + snum + ", " + mnum
+						+ ", " + entry.getValue() + ")";
+				stmt.executeUpdate(sql);
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 
 }

@@ -8,7 +8,8 @@ public class DeliveryView {
 	Scanner sc = new Scanner(System.in);
 	int act;
 	CustomerDAO cd = new CustomerDAO();
-	String cid = null;
+	String cid;
+	boolean isAdmin;
 
 	public DeliveryView() {
 		while (true) {
@@ -27,7 +28,12 @@ public class DeliveryView {
 				System.out.print("비밀번호 : ");
 				int cpw = sc.nextInt();
 				if (cd.signIn(this.cid, cpw)) {
-					System.out.println("로그인 성공!");
+					if (this.cid.equals("admin") && cpw == 1234) {
+						System.out.println("관리자 로그인 성공!");
+						isAdmin = true;
+					} else {
+						System.out.println("로그인 성공!");
+					}
 					break;
 				} else {
 					System.out.println("로그인 실패! 아이디 비밀번호를 다시 확인하세요.");
@@ -78,7 +84,11 @@ public class DeliveryView {
 		}
 
 		if (act == 1) {
-			new MemberView(this.cid);
+			if(!isAdmin) {
+				new MemberView(this.cid);
+			} else {
+				new AdminView();
+			}
 		}
 	}
 }

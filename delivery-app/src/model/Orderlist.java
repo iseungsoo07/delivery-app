@@ -4,14 +4,15 @@ public class Orderlist {
 	private String cid;
 	private int snum;
 	private int mnum;
+	private int mcount;
 	private String order_date;
 
-	public Orderlist(String cid, int snum, int mnum, String order_date) {
+	public Orderlist(String cid, int snum, int mnum, int mcount) {
 		super();
 		this.cid = cid;
 		this.snum = snum;
 		this.mnum = mnum;
-		this.order_date = order_date;
+		this.mcount = mcount;
 	}
 
 	public String getCid() {
@@ -44,6 +45,14 @@ public class Orderlist {
 
 	public void setOrder_date(String order_date) {
 		this.order_date = order_date;
+	}
+
+	public int getMcount() {
+		return mcount;
+	}
+
+	public void setMcount(int mcount) {
+		this.mcount = mcount;
 	}
 
 }
