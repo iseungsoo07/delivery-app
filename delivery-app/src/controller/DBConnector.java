@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+// 프로그램 시작 시 디비를 바로 연결하기 위한 클래스
 public class DBConnector {
 
 	String dName = "com.mysql.jdbc.Driver";

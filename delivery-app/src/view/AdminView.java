@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import controller.MenuDAO;
 
+// 관리자 로그인 화면
 public class AdminView {
 	Scanner sc = new Scanner(System.in);
 	MenuDAO md = new MenuDAO();
