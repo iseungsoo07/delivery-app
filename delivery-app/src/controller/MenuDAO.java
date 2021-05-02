@@ -24,13 +24,13 @@ public class MenuDAO {
 
 	// 메뉴 목록
 	String[] ma = null;
-	
+
 	// 가게 목록
 	String[] sa = null;
 
 	// 총 가격
 	int totalPrice;
-	
+
 	// 재고
 	int mre;
 
@@ -61,7 +61,7 @@ public class MenuDAO {
 
 		// StoreDAO에 저장된 sa값을 전달받음
 		sa = sd.getStoreArray();
-		
+
 		// 메뉴 목록 인덱스로 사용할 변수
 		int i = 0;
 
@@ -127,10 +127,11 @@ public class MenuDAO {
 
 	// 사용자 아이디와 가게번호를 인자로 받아옴
 	// 메뉴와 해당 메뉴의 수량을 선택하는 메소드
-	public void orderPhase(String cid, int storeNum) {
+	public void orderPhase(String cid) {
 		Scanner sc = new Scanner(System.in);
 		String ans = null;
 		int num = 0; // 사용자 입력을 받기 위한 변수
+		orderList.clear();
 
 		// 특별한 기능은 없지만
 		// 주문 할때 주소를 입력받기 위함
@@ -153,36 +154,52 @@ public class MenuDAO {
 				int count = 0; // 선택한 메뉴의 개수를 저장
 				System.out.print("메뉴 선택 : ");
 				num = sc.nextInt();
-				
+
 				// 사용자가 선택한 메뉴의 가격을 가져옴
 				sql = "SELECT mprice FROM menu WHERE menu = '" + ma[num - 1] + "'";
 				rs = stmt.executeQuery(sql);
 				rs.next();
-				
+
 				// 해당 메뉴의 가격을 mprice에 저장
 				mprice = rs.getInt(1);
-				
+
 				System.out.print("수량 : ");
 				count = sc.nextInt(); // 수량을 count에 저장
-				
-				// orderList HashMap에 {메뉴, 수량} 쌍으로 저장
-				orderList.put(ma[num - 1], count);
-				
-				// 총 가격 계산
-				totalPrice += count * mprice;
 
-				// 추가 주문 여부를 물어봄
-				System.out.print("추가 주문하시겠습니까? (y: 예, n: 아니오) : ");
-				ans = sc.next();
+				// 해당 메뉴의 재고를 가져옴
+				sql = "SELECT mre FROM menu WHERE menu = '" + ma[num - 1] + "'";
+				rs = stmt.executeQuery(sql);
+				rs.next();
 
-				// 혹시 대문자를 입력했을 경우를 대비
-				if (ans.toLowerCase().equals("y")) {
+				// 가져온 재고 저장
+				mre = rs.getInt(1);
+
+				// 주문 수량보다 재고가 적다면
+				if (count > mre) {
+					// 남은 재고 개수와 함께 다시 시도해달라는 메시지 출력
+					System.out.println("재고가 부족합니다." + ma[num - 1] + "의 현재 재고는 " + mre + "개 입니다.");
+					System.out.println("다시 시도해주세요.");
 					continue;
 				} else {
-					// 추가 주문을 하지 않을 경우 주소를 입력받고
-					System.out.print("주소를 입력해주세요 : ");
-					address = sc.next();
-					break;
+					// orderList HashMap에 {메뉴, 수량} 쌍으로 저장
+					orderList.put(ma[num - 1], count);
+
+					// 총 가격 계산
+					totalPrice += count * mprice;
+
+					// 추가 주문 여부를 물어봄
+					System.out.print("추가 주문하시겠습니까? (y: 예, n: 아니오) : ");
+					ans = sc.next();
+
+					// 혹시 대문자를 입력했을 경우를 대비
+					if (ans.toLowerCase().equals("y")) {
+						continue;
+					} else {
+						// 추가 주문을 하지 않을 경우 주소를 입력받고
+						System.out.print("주소를 입력해주세요 : ");
+						address = sc.next();
+						break;
+					}
 				}
 			}
 
@@ -192,7 +209,9 @@ public class MenuDAO {
 			System.out.println("총 비용 : " + totalPrice);
 
 			System.out.println();
-		} catch (ClassNotFoundException e) {
+		} catch (
+
+		ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -269,6 +288,68 @@ public class MenuDAO {
 			}
 		}
 	}
+	
+	// 결제 이후 메뉴 재고를 업데이트하기 위한 메소드 
+	public void updateMenuRemain() {
+		try {
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+			String sql = null;
+			
+			// 현재 재고를 가져올 변수
+			int mre = 0;
+			
+			// 수량을 저장할 변수
+			int mcount = 0;
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+			
+			// HashMap에 저장된 값을 한 쌍씩 가져오기 위한 Iterator
+			Iterator<Entry<String, Integer>> iter = orderList.entrySet().iterator();
+			
+			while (iter.hasNext()) {
+				// {key:value} 한쌍이 entry에 저장
+				Entry<String, Integer> entry = iter.next();
+
+				// entry에 저장된 메뉴이름에 따른 해당 메뉴의 재고를 가져옴
+				sql = "SELECT mre FROM menu WHERE menu = '" + entry.getKey() + "'";
+				rs = stmt.executeQuery(sql);
+				rs.next();
+				
+				// 가져온 재고를 저장
+				mre = rs.getInt("mre");
+				
+				// entry에 저장된 해당 메뉴를 몇 개 주문했는지 수량을 가져옴
+				mcount = entry.getValue();
+				
+				// 재고에서 수량 빼줌
+				mre -= mcount;
+				
+				// 재고 업데이트
+				sql = "UPDATE menu SET mre = " + mre + " WHERE menu = '" + entry.getKey() + "'";
+				stmt.executeUpdate(sql);
+			}
+						
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
 
 	// 주문내역 테이블에 주문내역을 저장하기 위한 메소드
 	// 어떤 사용자의 주문인지 어떤 가게인지를 파라미터로 받아옴
@@ -297,7 +378,7 @@ public class MenuDAO {
 			while (iter.hasNext()) {
 				// {key:value} 한쌍이 entry에 저장
 				Entry<String, Integer> entry = iter.next();
-				
+
 				// key에는 메뉴이름이 저장
 				// 해당 메뉴이름을 가진 메뉴의 번호를 가져옴
 				sql = "SELECT mnum FROM menu WHERE menu = '" + entry.getKey() + "'";
@@ -327,6 +408,5 @@ public class MenuDAO {
 			}
 		}
 	}
-	
 
 }

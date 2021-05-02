@@ -40,9 +40,9 @@ public class OrderView {
 		// 사용자가 입력한 가게 번호를 같이 전달
 		md.showMenus(num);
 		
-		// 어떤 사용자가 어떤 가게에 접근했는지 알기 위해
-		// 사용자 아이디와 가게 번호를 같이 전달
-		md.orderPhase(cid, num);
+		// 어떤 사용자가 접근했는지 알기 위해
+		// 사용자 아이디 전달
+		md.orderPhase(cid);
 		System.out.print("결제하시겠습니까? (y: 예, n: 아니오) : ");
 
 		ans = sc.next();
@@ -50,6 +50,8 @@ public class OrderView {
 		// 결제를 한다고 했을 경우
 		if (ans.toLowerCase().equals("y")) {
 			md.payMoney(cid); // 결제를 진행하는 메소드 호출, 사용자 아이디 전달
+			// 추가코드
+			md.updateMenuRemain();
 			md.insertOrderList(cid, num); // 주문내역을 저장하기 위한 메소드
 			new MemberView(cid); // 결제 완료 후 다시 사용자 화면 띄워줌
 		} else { 
