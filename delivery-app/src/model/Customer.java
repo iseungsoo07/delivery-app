@@ -6,6 +6,8 @@ public class Customer {
 	private String cname;
 	private int cphone;
 	private int balance;
+	
+	public Customer() {;}
 
 	public Customer(String cid, int cpw, String cname, int cphone) {
 		super();

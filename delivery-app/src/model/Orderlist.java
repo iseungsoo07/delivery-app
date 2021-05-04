@@ -6,6 +6,8 @@ public class Orderlist {
 	private int mnum;
 	private int mcount;
 	private String order_date;
+	
+	public Orderlist() {;}
 
 	public Orderlist(String cid, int snum, int mnum, int mcount) {
 		super();

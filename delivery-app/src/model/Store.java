@@ -7,6 +7,8 @@ public class Store {
 	private int sphone;
 	private String food_type;
 
+	public Store() 	{;}
+	
 	public Store(int snum, String sname, String saddr, int sphone, String menu_type) {
 		super();
 		this.snum = snum;
