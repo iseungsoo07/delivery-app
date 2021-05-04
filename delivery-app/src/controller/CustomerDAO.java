@@ -249,5 +249,37 @@ public class CustomerDAO {
 		// 실패 시 false 반환 
 		return false;
 	}
+	
+	public boolean isAdmin(String cid, int cpw) {
+		try {
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+			String sql = null;
+			
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+			
+			if(cid.contains("admin")) {
+				return true;
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return false;
+	}
 
 }

@@ -6,6 +6,8 @@ public class Menu {
 	private int snum;
 	private int mre;
 	private int mprice;
+	
+	public Menu() {;}
 
 	public Menu(int mnum, String menu, int snum, int mre, int mprice) {
 		super();

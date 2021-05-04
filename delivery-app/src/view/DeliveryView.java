@@ -15,6 +15,7 @@ public class DeliveryView {
 
 	public DeliveryView() {
 		while (true) {
+			System.out.println("===delivery-service===");
 			System.out.println("1. 로그인   2. 회원가입   3. 종료");
 			System.out.print("입력 : ");
 
@@ -32,7 +33,7 @@ public class DeliveryView {
 				System.out.print("비밀번호 : ");
 				int cpw = sc.nextInt();
 				if (cd.signIn(this.cid, cpw)) { // CustomerDAO signIn() 메소드 호출
-					if (this.cid.equals("admin") && cpw == 1234) { // 관리자 id, pw로 로그인 시
+					if (cd.isAdmin(this.cid, cpw)) { // 관리자 id, pw로 로그인 시
 						System.out.println("관리자 로그인 성공!");
 						isAdmin = true; // 관리자임을 확인하는 flag 변수 변경
 					} else {

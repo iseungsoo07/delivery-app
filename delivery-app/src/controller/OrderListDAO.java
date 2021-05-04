@@ -40,10 +40,10 @@ public class OrderListDAO {
 			
 			// 주문 내역 테이블이 비어있을 경우 주문 내역이 없다는 메시지 출력
 			// 이후 다시 사용자 화면으로 돌아감
-			if(!rs.next()) {
-				System.out.println("주문 내역이 없습니다.");
-				new MemberView(cid);
-			}
+//			if(!rs.next()) {
+//				System.out.println("주문 내역이 없습니다.");
+//				new MemberView(cid);
+//			}
 			
 			
 			while (rs.next()) {

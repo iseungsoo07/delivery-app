@@ -20,20 +20,19 @@ public class StoreDAO {
 
 	// 가게 목록을 저장하기 위한 ArrayList
 	ArrayList<Store> store_list = new ArrayList<Store>();
-	
+
 	// 음식 유형을 저장하기 위한 HashSet
 	// 중복 제거를 위함
 	HashSet<String> food_type = new HashSet<String>();
-	
-	
+
 	// 음식 유형에 번호를 붙이기 위한
 	// index가 필요해서 String 배열 선언
 	String[] ft = null;
-	
+
 	// 가게 목록에 번호를 붙이기 위한
 	// index가 필요해서 String 배열 선언
 	String[] sa = null;
-	
+
 	// 모든 가게 정보를 ArrayList에 담기 위한 메소드
 	public ArrayList<Store> selectAll() {
 		try {
@@ -74,7 +73,7 @@ public class StoreDAO {
 		return null;
 	}
 
-	// 음식 유형을 음식 유형  Set에 저장하기 위한 메소드
+	// 음식 유형을 음식 유형 Set에 저장하기 위한 메소드
 	// 유형의 중복을 막기 위해 Set 사용
 	public void getFoodType() {
 
@@ -101,7 +100,7 @@ public class StoreDAO {
 
 			// HashSet의 크기만큼 음식 유형 배열 크기 지정
 			ft = new String[food_type.size()];
-			
+
 			// Set은 순서가 없으므로 iterator() 메소드 사용
 			Iterator<String> iter = food_type.iterator();
 
@@ -125,7 +124,7 @@ public class StoreDAO {
 			}
 		}
 	}
-	
+
 	// ft 배열에 저장한 음식 유형을 출력
 	public void showFoodType() {
 		for (int i = 0; i < ft.length; i++) {
@@ -138,9 +137,9 @@ public class StoreDAO {
 	// 음식 유형을 전달받아서 해당 음식 유형을 가지는
 	// 가게 목록을 배열 형태로 반환해주는 메소드
 	public String[] getStoreInfo(int type) {
-		
+
 		int index = 0;
-		
+
 		try {
 			Class.forName(dName);
 
@@ -159,20 +158,20 @@ public class StoreDAO {
 
 			// 그 개수를 store_cnt 변수에 저장
 			int store_cnt = rs.getInt(1);
-			
-			// 가게 목록 배열의 크기를 그 개수만큼 지정 
+
+			// 가게 목록 배열의 크기를 그 개수만큼 지정
 			sa = new String[store_cnt];
 
 			// 해당 음식 유형값을 가지는 가게들의 이름을 가져옴
 			sql = "SELECT sname FROM store WHERE food_type = '" + ft[type - 1] + "'";
 
 			rs = stmt.executeQuery(sql);
-			
+
 			// 가게들의 이름을 가게 목록 배열에 저장
-			while(rs.next()) {
+			while (rs.next()) {
 				sa[index++] = rs.getString("sname");
 			}
-			
+
 			return sa;
 
 		} catch (ClassNotFoundException e) {
@@ -189,7 +188,7 @@ public class StoreDAO {
 		}
 		return null;
 	}
-	
+
 	// sa 배열에 저장된 가게들의 이름을 번호를 붙여서 출력해주는 메소드
 	public void showStoreInfo() {
 		System.out.println("===가게 목록===");
@@ -197,17 +196,54 @@ public class StoreDAO {
 			System.out.println(i + 1 + ". " + sa[i]);
 		}
 	}
-	
+
 	// MenuDAO로 클래스 변수 sa를 전달하기 위한 메소드
 	public String[] getStoreArray() {
 		return sa;
 	}
-	
+
 	// MenuDAO로 sa의 길이를 전달하기 위한 메소드
 	public int getStoreArrayLength() {
 		return sa.length;
 	}
 
-	
+	// 관리자 모드일때
+	// 매장을 추가하기 위한 메소드
+	public void addStore(String sname, String saddr, int sphone, String food_type) {
+		try {
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT count(*) FROM store";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int store_cnt = rs.getInt(1);
+
+			sql = "INSERT INTO store VALUES (" + ++store_cnt + ", '" + sname + "', '" + saddr + "', " + sphone + ", '"
+					+ food_type + "')";
+			
+			stmt.executeUpdate(sql);
+			
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 }

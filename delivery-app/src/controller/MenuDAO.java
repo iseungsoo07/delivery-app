@@ -21,6 +21,7 @@ public class MenuDAO {
 	Connection conn = null;
 	Statement stmt = null;
 	ResultSet rs = null;
+	Scanner sc = new Scanner(System.in);
 
 	// 메뉴 목록
 	String[] ma = null;
@@ -288,8 +289,8 @@ public class MenuDAO {
 			}
 		}
 	}
-	
-	// 결제 이후 메뉴 재고를 업데이트하기 위한 메소드 
+
+	// 결제 이후 메뉴 재고를 업데이트하기 위한 메소드
 	public void updateMenuRemain() {
 		try {
 			Class.forName(dName);
@@ -298,19 +299,19 @@ public class MenuDAO {
 			String user = "root";
 			String password = "1234";
 			String sql = null;
-			
+
 			// 현재 재고를 가져올 변수
 			int mre = 0;
-			
+
 			// 수량을 저장할 변수
 			int mcount = 0;
 
 			conn = DriverManager.getConnection(url, user, password);
 			stmt = conn.createStatement();
-			
+
 			// HashMap에 저장된 값을 한 쌍씩 가져오기 위한 Iterator
 			Iterator<Entry<String, Integer>> iter = orderList.entrySet().iterator();
-			
+
 			while (iter.hasNext()) {
 				// {key:value} 한쌍이 entry에 저장
 				Entry<String, Integer> entry = iter.next();
@@ -319,22 +320,21 @@ public class MenuDAO {
 				sql = "SELECT mre FROM menu WHERE menu = '" + entry.getKey() + "'";
 				rs = stmt.executeQuery(sql);
 				rs.next();
-				
+
 				// 가져온 재고를 저장
 				mre = rs.getInt("mre");
-				
+
 				// entry에 저장된 해당 메뉴를 몇 개 주문했는지 수량을 가져옴
 				mcount = entry.getValue();
-				
+
 				// 재고에서 수량 빼줌
 				mre -= mcount;
-				
+
 				// 재고 업데이트
 				sql = "UPDATE menu SET mre = " + mre + " WHERE menu = '" + entry.getKey() + "'";
 				stmt.executeUpdate(sql);
 			}
-						
-			
+
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -349,7 +349,6 @@ public class MenuDAO {
 		}
 
 	}
-	
 
 	// 주문내역 테이블에 주문내역을 저장하기 위한 메소드
 	// 어떤 사용자의 주문인지 어떤 가게인지를 파라미터로 받아옴
@@ -394,6 +393,280 @@ public class MenuDAO {
 						+ ", " + entry.getValue() + ")";
 				stmt.executeUpdate(sql);
 			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 관리자 모드일때
+	// 가게이름을 입력받아서 해당 가게에 메뉴를 추가하는 메소드
+	public void addMenu(String sname) {
+		try {
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT snum FROM store WHERE sname = '" + sname + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int snum = rs.getInt("snum");
+
+			sql = "SELECT menu, mprice FROM menu WHERE snum = " + snum;
+			rs = stmt.executeQuery(sql);
+
+			System.out.println("선택하신 가게의 현재 메뉴 목록입니다.");
+			while (rs.next()) {
+				System.out.println(rs.getString("menu") + "(" + rs.getInt("mprice") + "원)");
+			}
+
+			sql = "SELECT count(*) FROM menu";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int menu_cnt = rs.getInt(1);
+
+			String menu = null;
+			int mre = 0;
+			int mprice = 0;
+			System.out.print("추가할 메뉴 이름을 입력하세요 : ");
+			menu = sc.next();
+			System.out.print(menu + "의 재고를 입력해주세요 : ");
+			mre = sc.nextInt();
+			System.out.print(menu + "의 가격을 입력해주세요 : ");
+			mprice = sc.nextInt();
+
+			sql = "INSERT INTO menu VALUES (" + ++menu_cnt + ", '" + menu + "', " + snum + ", " + mre + ", " + mprice
+					+ ")";
+
+			stmt.executeUpdate(sql);
+
+			System.out.println("메뉴 등록에 성공했습니다.");
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 관리자 모드일때
+	// 가게 이름을 입력받아 해당 가게의 메뉴를 삭제하는 메소드
+	public void deleteMenu(String sname) {
+		try {
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT snum FROM store WHERE sname = '" + sname + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int snum = rs.getInt("snum");
+
+			sql = "SELECT menu, mprice FROM menu WHERE snum = " + snum;
+			rs = stmt.executeQuery(sql);
+
+			System.out.println("선택하신 가게의 현재 메뉴 목록입니다.");
+			while (rs.next()) {
+				System.out.println(rs.getString("menu") + "(" + rs.getInt("mprice") + "원)");
+			}
+
+			String menu = null;
+			System.out.print("삭제할 메뉴 이름을 입력하세요 : ");
+			menu = sc.next();
+
+			sql = "DELETE FROM menu WHERE menu = '" + menu + "'";
+			stmt.executeUpdate(sql);
+			System.out.println("메뉴 삭제 완료!");
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 관리자 모드일 때
+	// 가게이름을 입력받아 해당 가게의 모든 메뉴를 출력해주는 메소드
+	public void selectAllMenus(String sname) {
+		try {
+
+			int i = 0;
+
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT snum FROM store WHERE sname = '" + sname + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int snum = rs.getInt("snum");
+
+			sql = "SELECT menu, mprice FROM menu WHERE snum = " + snum;
+			rs = stmt.executeQuery(sql);
+
+			System.out.println("선택하신 가게의 현재 메뉴 목록입니다.");
+			while (rs.next()) {
+				System.out.println(++i + ". " + rs.getString("menu") + "(" + rs.getInt("mprice") + "원)");
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 관리자 모드일 때
+	// 가게이름을 입력받아 해당 가게에 접근 후
+	// 원하는 메뉴의 가격을 변경해주는 메소드
+	public void changePrice(String sname) {
+		try {
+
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT snum FROM store WHERE sname = '" + sname + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int snum = rs.getInt("snum");
+
+			sql = "SELECT menu, mprice FROM menu WHERE snum = " + snum;
+			rs = stmt.executeQuery(sql);
+
+			System.out.println("선택하신 가게의 현재 메뉴 목록입니다.");
+			while (rs.next()) {
+				System.out.println(rs.getString("menu") + "(" + rs.getInt("mprice") + "원)");
+			}
+
+			String menu = null;
+			int mprice = 0;
+			System.out.print("가격을 변경할 메뉴 이름을 입력하세요 : ");
+			menu = sc.next();
+			System.out.print("변동 후 가격을 입력하세요 : ");
+			mprice = sc.nextInt();
+
+			sql = "UPDATE menu SET mprice = " + mprice + " WHERE menu = '" + menu + "'";
+			stmt.executeUpdate(sql);
+
+			System.out.println("가격 변경 완료!");
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 관리자 모드일 때
+	// 메뉴의 재고를 추가하기 위한 메소드
+	public void addMenuRemain(String sname) {
+		try {
+
+			Class.forName(dName);
+
+			String url = "jdbc:mysql://localhost:3307/delivery-service";
+			String user = "root";
+			String password = "1234";
+
+			conn = DriverManager.getConnection(url, user, password);
+			stmt = conn.createStatement();
+
+			String sql = "SELECT snum FROM store WHERE sname = '" + sname + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int snum = rs.getInt("snum");
+
+			sql = "SELECT menu, mprice FROM menu WHERE snum = " + snum;
+			rs = stmt.executeQuery(sql);
+
+			System.out.println("선택하신 가게의 현재 메뉴 목록입니다.");
+			while (rs.next()) {
+				System.out.println(rs.getString("menu") + "(" + rs.getInt("mprice") + "원)");
+			}
+
+			String menu = null;
+			int mre = 0;
+			System.out.print("재고를 추가할 메뉴 이름을 입력하세요 : ");
+			menu = sc.next();
+			System.out.print("추가할 재고 수 : ");
+			mre = sc.nextInt();
+
+			sql = "SELECT mre FROM menu WHERE menu = '" + menu + "'";
+			rs = stmt.executeQuery(sql);
+			rs.next();
+
+			int cur_mre = rs.getInt("mre");
+
+			cur_mre += mre;
+
+			sql = "UPDATE menu SET mre = " + cur_mre + " WHERE menu = '" + menu + "'";
+			stmt.executeUpdate(sql);
+
+			System.out.println("재고 추가 완료!");
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
