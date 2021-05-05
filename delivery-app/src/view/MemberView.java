@@ -38,6 +38,7 @@ public class MemberView {
 		} else if(act == 3) {
 			new MyPageView(myID); // 3. 마이페이지 선택 시 마이페이지 화면을 보여주는 MyPageView() 생성자 호출
 		} else {
+			System.out.println();
 			new DeliveryView(); // 4. 돌아가기 선택 시 다시 로그인, 회원가입이 나오는 화면으로 돌아가도록 DeliveryView() 생성자 
 		}
 		

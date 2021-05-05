@@ -27,7 +27,7 @@ public class DeliveryView {
 				// 로그인
 				// 로그인 시에는 사용자 아이디 정보를 가지고 다른 페이지로 넘어가기 위해
 				// 클래스 변수 cid를 사용
-				System.out.println("로그인중 ...");
+				System.out.println("로그인 중 ...");
 				System.out.print("아이디 : ");
 				this.cid = sc.next();
 				System.out.print("비밀번호 : ");
@@ -39,6 +39,7 @@ public class DeliveryView {
 					} else {
 						System.out.println("사용자 로그인 성공!");
 					}
+					System.out.println();
 					break;
 				} else {
 					System.out.println("로그인 실패! 아이디 비밀번호를 다시 확인하세요.");
@@ -51,7 +52,7 @@ public class DeliveryView {
 				int cphone = 0;
 
 				while (true) {
-					System.out.println("회원가입중 ...");
+					System.out.println("회원가입 중 ...");
 					while (true) {
 						System.out.print("아이디 : ");
 						cid = sc.next();
@@ -76,6 +77,7 @@ public class DeliveryView {
 					// 회원가입 성공시 true, 실패시 false 반환
 					if (cd.signUp(cid, cpw, cname, cphone)) {
 						System.out.println("회원가입 성공!");
+						System.out.println();
 						break;
 					} else {
 						System.out.println("회원가입 실패! 다시시도하세요.");

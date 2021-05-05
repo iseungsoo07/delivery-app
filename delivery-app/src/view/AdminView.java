@@ -54,7 +54,7 @@ public class AdminView {
 				System.out.println();
 
 			} else if (act == 2) {
-
+				System.out.println();
 				System.out.println("===메뉴 추가 페이지===");
 
 				System.out.print("가게 이름을 입력하세요 : ");
@@ -64,7 +64,7 @@ public class AdminView {
 				System.out.println();
 
 			} else if (act == 3) {
-
+				System.out.println();
 				System.out.println("===메뉴 삭제 페이지===");
 				System.out.print("가게 이름을 입력하세요 : ");
 				sname = sc.next();
@@ -72,6 +72,7 @@ public class AdminView {
 				md.deleteMenu(sname);
 				System.out.println();
 			} else if (act == 4) {
+				System.out.println();
 				System.out.println("===메뉴 조회 페이지===");
 				System.out.print("가게 이름을 입력하세요 : ");
 				sname = sc.next();
@@ -79,6 +80,7 @@ public class AdminView {
 				md.selectAllMenus(sname);
 				System.out.println();
 			} else if (act == 5) {
+				System.out.println();
 				System.out.println("===가격 변경 페이지===");
 				System.out.print("가게 이름을 입력하세요 : ");
 				sname = sc.next();
@@ -86,6 +88,7 @@ public class AdminView {
 				md.changePrice(sname);
 				System.out.println();
 			} else if (act == 6) {
+				System.out.println();
 				System.out.println("===재고 추가 페이지===");
 				System.out.print("가게 이름을 입력하세요 : ");
 				sname = sc.next();
@@ -96,6 +99,7 @@ public class AdminView {
 			}
 
 			else {
+				System.out.println();
 				new DeliveryView();
 			}
 		}

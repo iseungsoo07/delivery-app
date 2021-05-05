@@ -56,11 +56,13 @@ public class MyPageView {
 				// false 반환 시 실패 메시지
 				System.out.println("입금 실패!");
 			}
+			System.out.println();
 			
 			// 이후 다시 마이페이지 화면으로 이동 
 			new MyPageView(myID);
 		} else {
 			// 3. 돌아가기 선택 시 다시 사용자 화면으로 이동
+			System.out.println();
 			new MemberView(myID);
 		}
 	}
